@@ -1,6 +1,6 @@
 // Variable y selectores
 const formulario = document.querySelector('#agregar-gasto'),
-      gastoListado = document.querySelector('#gastos ul')
+      gastoListado = document.querySelector('#gastos ul');
 
 
 // Eventos
@@ -27,7 +27,8 @@ class Presupuesto {
     this.restante = this.presupuesto - gastado;
   }
   eliminarGasto(id){
-    this.gastos.filter(gasto => gasto.id !== id)
+    this.gastos = this.gastos.filter(gasto => gasto.id !== id);
+    this.calcularRestante();
   }
 }
 
@@ -109,13 +110,18 @@ class UI{
       restanteDiv.classList.remove('alert-warning', 'alert-success');
       restanteDiv.classList.add('alert-danger');
     }else if ((presupuesto / 2) > restante) {
-      restanteDiv.classList.remove('alert-success');
+      restanteDiv.classList.remove('alert-success', 'alert-danger');
       restanteDiv.classList.add('alert-warning');
+    }else{
+      restanteDiv.classList.remove('alert-danger', 'alert-warning');
+      restanteDiv.classList.add('alert-success');
     }
     // si el total es igual o menor a 0
     if (restante <= 0) {
       ui.imprimirAlerta('El presupuesto se ha agotado', 'error');
       formulario.querySelector('button[type="submit"]').disabled = true;
+    }else{
+      formulario.querySelector('button[type="submit"]').disabled = false;
     }
   }
 }
@@ -165,6 +171,13 @@ function agregarGasto(e){
 
 function eliminarGasto(id){
   presupuesto.eliminarGasto(id);
-  const { gastos } = presupuesto;
+  const { gastos, restante } = presupuesto;
+  // console.log(presupuesto, 'desde la funcion');
   ui.agregarGastoListado(gastos);
+  // Imprime alerta
+  ui.imprimirAlerta('Gasto reembolsado.');
+  // Actualizar restante
+  ui.actualizarRestante(restante);
+  // comprobar presupuesto
+  ui.comprobarPresupuesto(presupuesto);
 }
